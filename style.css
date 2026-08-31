@@ -4,9 +4,9 @@
 
 body {
   margin: 0;
-  background: #7fdcd7;
-  color: #222;
-  font-family: "Helvetica Neue", Arial, sans-serif;
+  background: ##FFFFFF;
+  color: #89CFF0;
+  font-family: "Garamond", Arial, sans-serif;
 }
 
 #all-contents {
@@ -53,3 +53,37 @@ text-transform: uppercase;
 letter-spacing: 0.15em;
 line-height: 1.4;
 }
+#interests h3 {
+  color: #FFB6C1;
+}
+
+
+#interests li {
+  background: #99515c;
+  border-color: #268ebe;
+  color: #acdcf3;
+}
+
+
+#interests li:hover {
+  background: #f99dac;
+  color: #fff;
+}
+
+
+.sidebar-img {
+  width: 100%;
+  max-width: 760px;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  display: block;
+  border-radius: 16px;
+  filter: grayscale(100%);
+  box-shadow: 0 8px 30px rgb(47, 6, 6);
+  transition:
+    filter 0.4s ease,
+    transform 0.4s ease,
+    box-shadow 0.4s ease;
+}
+
+
