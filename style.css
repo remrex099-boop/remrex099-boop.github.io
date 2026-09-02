@@ -4,7 +4,14 @@
 
 body {
   margin: 0;
-  background: #FFFFFF;
+  background: linear-gradient(
+    to right,
+    cyan 0%,
+    pink 25%,
+    white 50%,
+    pink 75%,
+    cyan 100%
+  );
   color: #89CFF0;
   font-family: "Garamond", Arial, sans-serif;
 }
@@ -47,14 +54,14 @@ color: #89CFF0;
 
 .content > p {
 margin: 0;
-color: #FFB6C1;
+color: #30080e;
 font-size: 0.9rem;
 text-transform: uppercase;
 letter-spacing: 0.15em;
 line-height: 1.4;
 }
 #interests h3 {
-  color: #FFB6C1;
+  color: #1e0f11;
 }
 
 
