@@ -7,9 +7,25 @@
 </head>
 
 <body>
-  <a href="index.html">
-    <img src="https://media.tenor.com/o5Br6wYGkzIAAAAC/rainbow-boa-brazillian-rainbow-boa.gif" alt="A dog">
-  </a>
+  <img id="toggle-image" src="https://media.tenor.com/o5Br6wYGkzIAAAAC/rainbow-boa-brazillian-rainbow-boa.gif"
+    alt="A dog" style="cursor:pointer; max-width:100%; display:block;">
+
+  <script>
+    const toggleImage = document.getElementById('toggle-image');
+    const gifUrl = 'https://media.tenor.com/QA6mPKs100UAAAAC/caught-in.gif';
+    const homeUrl = 'index.html';
+    let gifOpened = false;
+
+    toggleImage.addEventListener('click', () => {
+      if (gifOpened) {
+        window.location.href = homeUrl;
+        return;
+      }
+
+      window.open(gifUrl, '_blank');
+      gifOpened = true;
+    });
+  </script>
 </body>
 
 </html>
