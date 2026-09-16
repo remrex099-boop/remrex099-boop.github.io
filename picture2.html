@@ -12,18 +12,24 @@
 
   <script>
     const toggleImage = document.getElementById('toggle-image');
-    const gifUrl = 'https://media.tenor.com/QA6mPKs100UAAAAC/caught-in.gif';
+    const originalSrc = 'https://media.tenor.com/o5Br6wYGkzIAAAAC/rainbow-boa-brazillian-rainbow-boa.gif';
+    const gifSrc = 'https://media.tenor.com/QA6mPKs100UAAAAC/caught-in.gif';
     const homeUrl = 'index.html';
-    let gifOpened = false;
+    let showingGif = false;
 
     toggleImage.addEventListener('click', () => {
-      if (gifOpened) {
+      if (showingGif) {
         window.location.href = homeUrl;
         return;
       }
 
-      window.open(gifUrl, '_blank');
-      gifOpened = true;
+      toggleImage.src = gifSrc;
+      showingGif = true;
+    });
+
+    toggleImage.addEventListener('dblclick', () => {
+      toggleImage.src = originalSrc;
+      showingGif = false;
     });
   </script>
 </body>
