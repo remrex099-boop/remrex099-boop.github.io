@@ -1,9 +1,9 @@
 // setup variables
 const walkAcceleration = 2.5; // how much is added to the speed each frame
-const gravity = 0.5; // how much is subtracted from speedY each frame
+let gravity = 0.5; // how much is subtracted from speedY each frame
 const friction = 1.5; // how much the player is slowed each frame
 const maxSpeed = 8; // maximum horizontal speed, not vertical
-const playerJumpStrength = 12; // this is subtracted from the speedY each jump
+let playerJumpStrength = 12; // this is subtracted from the speedY each jump
 const projectileSpeed = 8; // the speed of projectiles
 let shouldDrawGrid = false;
 let gridMade = false;
@@ -20,8 +20,8 @@ const playerScale = 0.8; //makes the player just a bit smaller. Doesn't affect t
 const player = {
   x: 50,
   y: 100,
-  speedX: 0,
-  speedY: 0,
+  speedX: 5,
+  speedY: 5,
   width: undefined,
   height: undefined,
   onGround: false,
@@ -96,10 +96,10 @@ let halleImage;
 let animationDetails = {};
 
 var collectableList = {
-  database: { image: "images/collectables/database.png" },
-  diamond: { image: "images/collectables/diamond-head.png" },
-  grace: { image: "images/collectables/grace-head.png" },
-  kennedi: { image: "images/collectables/kennedi-head.png" },
-  max: { image: "images/collectables/max-head.png" },
-  steve: { image: "images/collectables/steve-head.png" },
+  database: { image: "https://www.image2url.com/r2/default/images/1790790445548-a4a27a67-10d4-46dd-900f-4aebbb6da78e.webp" },
+  diamond: { image: "https://www.image2url.com/r2/default/images/1790790445548-a4a27a67-10d4-46dd-900f-4aebbb6da78e.webp" },
+  grace: { image: "https://www.image2url.com/r2/default/images/1790790445548-a4a27a67-10d4-46dd-900f-4aebbb6da78e.webp" },
+  kennedi: { image: "https://www.image2url.com/r2/default/images/1790790445548-a4a27a67-10d4-46dd-900f-4aebbb6da78e.webp" },
+  max: { image: "https://www.image2url.com/r2/default/images/1790790445548-a4a27a67-10d4-46dd-900f-4aebbb6da78e.webp" },
+  steve: { image: "https://www.image2url.com/r2/default/images/1790790445548-a4a27a67-10d4-46dd-900f-4aebbb6da78e.webp" },
 };
