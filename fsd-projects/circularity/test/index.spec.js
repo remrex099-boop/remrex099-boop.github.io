@@ -150,29 +150,32 @@ describe('Circularity', function() {
     });
 
     describe('TODO 5: should create a function to keep a circle in the bounds of a screen', function() {
-        // check right boundary
-        it('should move a circle to offscreen-left after moving offscreen-right', function() {
-            let circle = { x: canvas.width + 5, y: 1, radius: 1 };
+        it('should bounce a circle off the right wall', function() {
+            let circle = { x: canvas.width + 5, y: 1, radius: 1, velocityX: 2, velocityY: 0 };
             checkCirclePosition(circle);
-            expect(circle.x === -circle.radius).to.be.true;
+            expect(circle.x).to.equal(2 * (canvas.width - circle.radius) - (canvas.width + 5));
+            expect(circle.velocityX).to.equal(-2);
         });
 
-        it('should move a circle to offscreen-right after moving offscreen-left', function() {
-            circle = { x: -5, y: 1, radius: 1 };
+        it('should bounce a circle off the left wall', function() {
+            circle = { x: -5, y: 1, radius: 1, velocityX: -2, velocityY: 0 };
             checkCirclePosition(circle);
-            expect(circle.x === canvas.width + circle.radius).to.be.true;
+            expect(circle.x).to.equal(circle.radius + 5);
+            expect(circle.velocityX).to.equal(2);
         });
 
-        it('should move a circle to offscreen-top after moving offscreen-bottom', function() {
-            circle = { x: 1, y: canvas.height + 5, radius: 1 };
+        it('should bounce a circle off the bottom wall', function() {
+            circle = { x: 1, y: canvas.height + 5, radius: 1, velocityX: 0, velocityY: 2 };
             checkCirclePosition(circle);
-            expect(circle.y === -circle.radius).to.be.true;
+            expect(circle.y).to.equal(2 * (canvas.height - circle.radius) - (canvas.height + 5));
+            expect(circle.velocityY).to.equal(-2);
         });
 
-        it('should move a circle to offscreen-bottom after moving offscreen-top', function() {
-            circle = { x: 1, y: -5, radius: 1 };
+        it('should bounce a circle off the top wall', function() {
+            circle = { x: 1, y: -5, radius: 1, velocityX: 0, velocityY: -2 };
             checkCirclePosition(circle);
-            expect(circle.y === canvas.height + circle.radius).to.be.true;
+            expect(circle.y).to.equal(circle.radius + 5);
+            expect(circle.velocityY).to.equal(2);
         });
     });
 

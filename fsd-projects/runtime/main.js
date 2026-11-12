@@ -278,18 +278,35 @@ function cleanupGameObjects() {
 =           Rendering Helper Functions           =
 ====================================================*/
 
+const gameBackgroundImage = new Image();
+gameBackgroundImage.src =
+  "https://cdn.cosmos.so/305c6748-fa2a-4f88-af26-a2a2f4e65332?format=webp";
+let gameBackgroundOffsetX = 0;
+const gameBackgroundSpeed = 1.5;
+let gameBackgroundStyleInitialized = false;
+const playerRenderOffsetY = 16;
+
 function drawBackground() {
   const w = canvas.width;
   const h = canvas.height;
 
-  ctx.fillStyle = THEME.upperBackground;
-  ctx.fillRect(0, 0, w, groundY);
+  if (!gameBackgroundStyleInitialized) {
+    canvas.style.backgroundImage = `url("${gameBackgroundImage.src}")`;
+    canvas.style.backgroundSize = `auto ${h}px`;
+    canvas.style.backgroundRepeat = "repeat-x";
+    canvas.style.backgroundColor = THEME.upperBackground;
+    gameBackgroundStyleInitialized = true;
+  }
 
-  ctx.fillStyle = THEME.ground;
-  ctx.fillRect(0, groundY, w, groundY + groundHeight);
+  ctx.clearRect(0, 0, w, h);
 
-  ctx.fillStyle = THEME.lowerBackground;
-  ctx.fillRect(0, groundY + groundHeight, w, h);
+  if (gameBackgroundImage.complete && gameBackgroundImage.naturalHeight > 0) {
+    const imageWidth =
+      (gameBackgroundImage.naturalWidth * h) / gameBackgroundImage.naturalHeight;
+    gameBackgroundOffsetX =
+      (gameBackgroundOffsetX + gameBackgroundSpeed) % imageWidth;
+    canvas.style.backgroundPositionX = `${gameBackgroundOffsetX}px`;
+  }
 }
 
 function drawScenery() {
@@ -371,6 +388,23 @@ function drawProjectiles() {
 ====================================================*/
 
 function moveHallebot() {
+  const moveSpeed = 5;
+
+  if (keyPress.left && !keyPress.right) {
+    player.speedX = -moveSpeed;
+  } else if (keyPress.right && !keyPress.left) {
+    player.speedX = moveSpeed;
+  } else {
+    player.speedX = 0;
+  }
+
+  player.x += player.speedX;
+
+  const robotWidth = player.width || player.hitBoxWidth;
+  const robotHeight = player.height || player.hitBoxHeight;
+  player.x = Math.max(0, Math.min(player.x, canvas.width - robotWidth));
+  player.y = Math.min(player.y, canvas.height - robotHeight);
+
   // Check for ground collision
   checkIfOnGround(); // sets player.onGround to true or false
 
@@ -558,7 +592,7 @@ function drawRobot() {
     spriteWidth,
     spriteHeight,
     player.x - player.hitDx,
-    player.y - player.hitDy,
+    player.y - player.hitDy + playerRenderOffsetY,
     player.width,
     player.height
   );
@@ -576,6 +610,12 @@ function handleKeyDown(e) {
   if (e.key === "ArrowDown" || e.key === "s") {
     keyPress.down = true;
   }
+  if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") {
+    keyPress.left = true;
+  }
+  if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") {
+    keyPress.right = true;
+  }
   if (e.key === " ") {
     keyPress.space = true;
   }
@@ -591,6 +631,12 @@ function handleKeyUp(e) {
       duckTimer = 8;
       frameIndex = 20;
     }
+  }
+  if (e.key === "ArrowLeft" || e.key === "a" || e.key === "A") {
+    keyPress.left = false;
+  }
+  if (e.key === "ArrowRight" || e.key === "d" || e.key === "D") {
+    keyPress.right = false;
   }
   if (e.key === " ") {
     keyPress.space = false;

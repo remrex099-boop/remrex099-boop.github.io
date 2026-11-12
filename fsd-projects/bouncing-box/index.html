@@ -6,18 +6,114 @@
   <title>Bouncing Box</title>
   <script src="jquery.min.js"></script>
   <style>
+    body {
+      margin: 0;
+      background: #000;
+    }
+
+    .background-video {
+      position: fixed;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      pointer-events: none;
+      z-index: 0;
+    }
+
     .box {
-      width: 70px;
-      height: 70px;
-      background-color: teal;
-      font-size: 300%;
-      text-align: center;
+      width: 110px;
+      height: 110px;
       user-select: none;
       display: block;
       position: absolute;
       top: 100px;
+      z-index: 1;
+      cursor: pointer;
+      touch-action: manipulation;
       /* Change me! */
       left: 0px;
+    }
+
+    .box video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      pointer-events: none;
+    }
+
+    .score {
+      color: rgb(45, 9, 9);
+      font-size: 45px;
+      line-height: 1;
+      text-shadow: 0 1px 3px black;
+      pointer-events: none;
+    }
+
+    .countdown {
+      color: #fff;
+      font-size: 24px;
+      font-weight: bold;
+      text-shadow: 0 1px 3px black;
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    .bottom-dock {
+      position: fixed;
+      left: 50%;
+      bottom: 12px;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      z-index: 1;
+    }
+
+    .video-placeholder {
+      width: 120px;
+      height: 68px;
+      box-sizing: border-box;
+      overflow: hidden;
+      border: 2px dashed #666;
+      background: #e8e8e8;
+      color: #444;
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+    }
+
+    .video-placeholder video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .score-reward {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 80vw;
+      max-width: 700px;
+      max-height: 80vh;
+      object-fit: contain;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    @media (max-width: 360px) {
+      .score {
+        font-size: 36px;
+      }
+
+      .video-placeholder {
+        width: 96px;
+        height: 54px;
+      }
     }
 
     .board {
@@ -28,8 +124,24 @@
 </head>
 
 <body class="board">
+  <video class="background-video" autoplay muted loop playsinline aria-hidden="true">
+    <source src="https://cdn.cosmos.so/28c6bd55-1a61-4be4-8886-4a626fab4fb9.mp4" type="video/mp4">
+  </video>
   <!-- HTML for the box -->
-  <div class="box">?</div>
+  <div class="box">
+    <video autoplay muted loop playsinline>
+      <source src="https://cdn.cosmos.so/8705bbe5-fddf-4507-a711-e210d9efaa8c.mp4" type="video/mp4">
+    </video>
+  </div>
+  <div class="bottom-dock">
+    <span class="countdown" aria-live="polite">Time: 6</span>
+    <span class="score" aria-live="polite"></span>
+    <div class="video-placeholder">
+      <video autoplay muted loop playsinline aria-label="Video beside the score"
+        src="https://cdn.cosmos.so/6951fae8-a0f5-454c-a067-8cb3b5ff8cf6.mp4"></video>
+    </div>
+  </div>
+  <img class="score-reward" src="https://cdn.cosmos.so/4213ad45-8f72-47b5-9111-8ee91ebb8cf4?format=webp" alt="Score milestone reward">
 
   <script>
     (function () {
@@ -41,19 +153,30 @@
       //////////////////////////////////////////////////////////////////
 
       var box = jQuery(".box"); // reference to the HTML .box element
+      var boxVideo = jQuery(".box video");
+      var score = jQuery(".score");
+      var countdownDisplay = jQuery(".countdown");
+      var scoreReward = jQuery(".score-reward");
       var board = jQuery(".board"); // reference to the HTML .board element
       var boardWidth = board.width(); // the maximum X-Coordinate of the screen
+      var maxPositionX = Math.max(0, boardWidth - box.outerWidth());
 
       // update the boardWidth variable when the window is resized
       jQuery(window).on("resize", function () {
         boardWidth = board.width();
+        maxPositionX = Math.max(0, boardWidth - box.outerWidth());
+        positionX = Math.min(positionX, maxPositionX);
+        moveBoxTo(positionX);
       });
 
       // Every 50 milliseconds, call the update Function (see below)
       setInterval(update, 50);
-
-      // Every time the box is pressed, call the handleBoxClick Function (see below)
-      box.on("mousedown", handleBoxClick);
+      var countdownSeconds = 6;
+      var failureUrl = "https://cdn.cosmos.so/01a0d5a9-8aa2-7123-a040-a489168b4618?format=webp";
+      var countdownInterval = setInterval(updateCountdown, 1000);
+var overAchiever = "https://cdn.cosmos.so/93633384-7351-40fb-be74-ba9dc57662e1?format=webp"
+      // Use pointerdown for consistent mouse, touch, and stylus input.
+      box.on("pointerdown", handleBoxClick);
 
       // moves the Box to a new position on the screen along the X-Axis
       function moveBoxTo(newPositionX) {
@@ -62,7 +185,36 @@
 
       // changes the text displayed on the Box
       function changeBoxText(newText) {
-        box.text(newText);
+        score.text(newText);
+      }
+
+      function showScoreReward(imageUrl) {
+        scoreReward.attr("src", imageUrl).css("display", "block");
+      }
+
+      function showVideo(videoUrl) {
+        var videoElement = boxVideo.get(0);
+        videoElement.src = videoUrl;
+        videoElement.load();
+      }
+
+      function updateCountdown() {
+        countdownSeconds -= 1;
+        countdownDisplay.text("Time: " + countdownSeconds);
+
+        if (countdownSeconds === 0) {
+          clearInterval(countdownInterval);
+          if (points < 60) {
+            window.location.href = failureUrl;
+          }
+        }
+      }
+
+      function resetCountdown() {
+        clearInterval(countdownInterval);
+        countdownSeconds = 6;
+        countdownDisplay.text("Time: " + countdownSeconds);
+        countdownInterval = setInterval(updateCountdown, 1000);
       }
 
       //////////////////////////////////////////////////////////////////
@@ -79,13 +231,16 @@
        * Each time it is called, it should move the Box to a new location.
        * If the box drifts off the screen, turn it around!
        */
+
       function update() {
         positionX = positionX + speed;
 
-        if (positionX > boardWidth) {
-          speed = speed * -1;
+        if (positionX > maxPositionX) {
+          positionX = maxPositionX;
+          speed = -Math.abs(speed);
         } else if (positionX < 0) {
-          speed = speed * -1;
+          positionX = 0;
+          speed = Math.abs(speed);
         }
 
         moveBoxTo(positionX);
@@ -101,9 +256,21 @@
       function handleBoxClick() {
         points = points + 1;
         changeBoxText(points);
-        speed = 3 * points + 10;
+        resetCountdown();
+        if (points === 41) {
+          showVideo("https://cdn.cosmos.so/3ad28d2d-b4fb-4c16-95b5-3365f3a8f009.mp4");
+        }
+        if (points === 50) {
+          showScoreReward("https://cdn.cosmos.so/bcdb77c6-c395-4245-8f18-48b99b87ef01?format=webp");
+        }
+        speed = 3 * points + 5;
         positionX = 0;
         moveBoxTo(positionX);
+
+        if (points >= 60) {
+          showScoreReward(overAchiever);
+          clearInterval(countdownInterval);
+        }
       }
     })();
   </script>

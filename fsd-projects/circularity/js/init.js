@@ -7,7 +7,7 @@ var init = function (window) {
         app = window.opspark.makeApp(),
         canvas = app.canvas, 
         view = app.view,
-        fps = draw.fps('#000');
+        fps = draw.fps('#e37f7f');
         
     
     window.opspark.makeGame = function() {
@@ -21,10 +21,17 @@ var init = function (window) {
         
         // TODO 1 : Declare and initialize our variables
 
+var circles = [];
+var mouseForceRadius = 140;
+var maxCircleSpeed = 450;
 
-
-        // TODO 2 : Create a function that draws a circle 
-        
+// TODO 2 : Create a function that draws a circle
+function drawCircle() {
+    var circle = draw.randomCircleInArea(canvas, true, true, "#29284f", 2);
+    physikz.addRandomVelocity(circle, canvas, 5, 5);
+    view.addChild(circle);
+    circles.push(circle);
+}
 
 
         // TODO 3 : Call the drawCircle() function
@@ -32,7 +39,9 @@ var init = function (window) {
 
 
         // TODO 7 : Use a loop to create multiple circles
-
+        for (var i = 0; i < 50; i++) {
+            drawCircle();
+        }
 
 
 
@@ -47,7 +56,35 @@ var init = function (window) {
         */
         function update() {
             // TODO 4 : Update the position of each circle using physikz.updatePosition()
+            for (var i = 0; i < circles.length; i++) {
+                var circle = circles[i];
+                var stage = app.stage;
+                if (stage && stage.mouseInBounds) {
+                    var dx = circle.x - stage.mouseX;
+                    var dy = circle.y - stage.mouseY;
+                    var distance = Math.sqrt(dx * dx + dy * dy);
 
+                    if (distance < mouseForceRadius) {
+                        if (distance === 0) {
+                            dx = 1;
+                            distance = 1;
+                        }
+
+                        var force = (1 - distance / mouseForceRadius) * 0.35;
+                        circle.velocityX += dx / distance * force;
+                        circle.velocityY += dy / distance * force;
+
+                        var speed = Math.sqrt(circle.velocityX * circle.velocityX + circle.velocityY * circle.velocityY);
+                        if (speed > maxCircleSpeed) {
+                            circle.velocityX = circle.velocityX / speed * maxCircleSpeed;
+                            circle.velocityY = circle.velocityY / speed * maxCircleSpeed;
+                        }
+                    }
+                }
+
+                physikz.updatePosition(circle);
+                game.checkCirclePosition(circle);
+            }
             
             // TODO 5 : Call game.checkCirclePosition() on your circles
            
@@ -63,17 +100,40 @@ var init = function (window) {
         it to the opposite side of the screen.
         */
         game.checkCirclePosition = function(circle) {
+            var minX = circle.radius;
+            var maxX = canvas.width - circle.radius;
+            var minY = circle.radius;
+            var maxY = canvas.height - circle.radius;
 
-            // if the circle has gone past the RIGHT side of the screen then place it on the LEFT
-            if ( circle.x > canvas.width ) {
-                circle.x = 0;
+            if (maxX < minX) {
+                circle.x = canvas.width / 2;
+                circle.velocityX = 0;
+            } else {
+                while (circle.x > maxX || circle.x < minX) {
+                    if (circle.x > maxX) {
+                        circle.x = maxX - (circle.x - maxX);
+                        circle.velocityX = -Math.abs(circle.velocityX || 0);
+                    } else {
+                        circle.x = minX + (minX - circle.x);
+                        circle.velocityX = Math.abs(circle.velocityX || 0);
+                    }
+                }
             }
-            
-            // TODO 6 : YOUR CODE STARTS HERE //////////////////////
-            
 
-
-            // YOUR TODO 6 CODE ENDS HERE //////////////////////////
+            if (maxY < minY) {
+                circle.y = canvas.height / 2;
+                circle.velocityY = 0;
+            } else {
+                while (circle.y > maxY || circle.y < minY) {
+                    if (circle.y > maxY) {
+                        circle.y = maxY - (circle.y - maxY);
+                        circle.velocityY = -Math.abs(circle.velocityY || 0);
+                    } else {
+                        circle.y = minY + (minY - circle.y);
+                        circle.velocityY = Math.abs(circle.velocityY || 0);
+                    }
+                }
+            }
         }
         
         /////////////////////////////////////////////////////////////

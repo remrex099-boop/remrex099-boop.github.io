@@ -7,7 +7,7 @@ const THEME = {
 };
 
 // These control the ground position and height:
-const groundY = 350; // Y position of the ground
+const groundY = 535; // Y position of the ground
 const groundHeight = 50; // Height of the ground
 
 // Change these to change the HUD, including health bar colors and sizes
@@ -59,7 +59,8 @@ const player = {
   hitBoxWidth: 50 * playerScale,
   hitBoxHeight: 105 * playerScale,
   x: 50,
-  y: groundY - 105 * playerScale,
+  y: groundY - 115 * playerScale,
+  speedX: 0,
   speedY: 0,
   width: undefined,
   height: undefined,
@@ -72,6 +73,8 @@ const keyPress = {
   any: false,
   up: false,
   down: false,
+  left: false,
+  right: false,
   space: false,
 };
 
